@@ -4825,12 +4825,12 @@ var __webpack_exports__ = {};
 (() => {
 "use strict";
 __nccwpck_require__.r(__webpack_exports__);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(7147);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(fs__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(9316);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(518);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(9316);
+/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(518);
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(7147);
+/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(fs__WEBPACK_IMPORTED_MODULE_2__);
 
 
 
@@ -4876,10 +4876,10 @@ const fail = (message) => {
 const run = async () => {
 	console.log('Validating params...')
 	// Get & validate all inputs from the action
-	const universeId = validateInt(_actions_core__WEBPACK_IMPORTED_MODULE_1___default().getInput('universe-id'));
-	const placeId = validateInt(_actions_core__WEBPACK_IMPORTED_MODULE_1___default().getInput('place-id'));
-	const apiKey = validateStr(_actions_core__WEBPACK_IMPORTED_MODULE_1___default().getInput('api-key'));
-	const path = validateStr(_actions_core__WEBPACK_IMPORTED_MODULE_1___default().getInput('path'));
+	const universeId = validateInt(_actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('universe-id'));
+	const placeId = validateInt(_actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('place-id'));
+	const apiKey = validateStr(_actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('api-key'));
+	const path = validateStr(_actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('path'));
 	// Check if all inputs are good
 	if (!universeId) { return fail('Universe id was not valid') }
 	if (!placeId) { return fail('Place id was not valid') }
@@ -4895,13 +4895,13 @@ const run = async () => {
 	console.log('Reading place file...')
 	let file
 	try {
-		file = await fs__WEBPACK_IMPORTED_MODULE_0__.promises.readFile(path)
+		file = await fs__WEBPACK_IMPORTED_MODULE_2__.promises.readFile(path)
 	} catch {
 		return fail(`Unable to read file at "${path}"`)
 	}
 	// Try to publish to the open cloud api
 	console.log('Publishing to Roblox...')
-	return await (axios__WEBPACK_IMPORTED_MODULE_2___default()({
+	return await (axios__WEBPACK_IMPORTED_MODULE_1___default()({
 		method: 'POST',
 		url: `https://apis.roblox.com/universes/v1/${universeId}/places/${placeId}/versions?versionType=Published`,
 		data: file,
@@ -4955,20 +4955,20 @@ const run = async () => {
 
 run().then(res => {
 	if (res.success) {
-		_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setOutput('success', 'true')
-		_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setOutput('message', 'Published!')
-		_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setOutput('version-number', res.versionNumber.toString())
+		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('success', 'true')
+		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('message', 'Published!')
+		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('version-number', res.versionNumber.toString())
 	} else {
-		_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setOutput('success', 'false')
-		_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setOutput('message', res.message)
-		_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setOutput('version-number', '-1')
-		_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setFailed(res.message)
+		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('success', 'false')
+		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('message', res.message)
+		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('version-number', '-1')
+		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setFailed(res.message)
 	}
 }).catch(err => {
-	_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setOutput('success', 'false')
-	_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setOutput('message', err)
-	_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setOutput('version-number', '-1')
-	_actions_core__WEBPACK_IMPORTED_MODULE_1___default().setFailed(err)
+	_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('success', 'false')
+	_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('message', err)
+	_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('version-number', '-1')
+	_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setFailed(err)
 })
 })();
 
