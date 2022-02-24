@@ -18,7 +18,7 @@ This action publishes a place file to Roblox using the Open Cloud API.
 ## Example usage
 
 ```yaml
-uses: filiptibell/roblox-place-publish-action@v1.2
+uses: filiptibell/roblox-place-publish-action@v2
 with:
   universe-id: '123456'
   place-id: '1234567890'

@@ -1,6 +1,6 @@
 {
   "name": "roblox-place-publish-action",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Publish a place file to Roblox using the Open Cloud API",
   "main": "dist/index.js",
   "keywords": [],

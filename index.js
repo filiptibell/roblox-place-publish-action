@@ -82,6 +82,10 @@ const run = async () => {
 			// Check for successful result including version number
 			const version = validateInt(data.versionNumber)
 			if (version) {
+				console.log('')
+				console.log('Published to roblox successfully!')
+				console.log('New version number: ' + version.toString())
+				console.log('')
 				return {
 					success: true,
 					message: 'Published!',
