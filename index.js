@@ -1,8 +1,6 @@
-import { promises as fsPromises } from 'fs';
-
-import core from '@actions/core';
-
-import axios, { AxiosRequestConfig } from 'axios';
+const core = require('@actions/core')
+const axios = require('axios')
+const fs = require('fs')
 
 
 
@@ -62,13 +60,13 @@ const run = async () => {
 	console.log('Reading place file...')
 	let file
 	try {
-		file = await fsPromises.readFile(path)
+		file = await fs.promises.readFile(path)
 	} catch {
 		return fail(`Unable to read file at "${path}"`)
 	}
 	// Try to publish to the open cloud api
 	console.log('Publishing to Roblox...')
-	return await (axios({
+	return await (axios.default({
 		method: 'POST',
 		url: `https://apis.roblox.com/universes/v1/${universeId}/places/${placeId}/versions?versionType=Published`,
 		data: file,
