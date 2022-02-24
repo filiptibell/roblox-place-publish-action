@@ -4775,67 +4775,17 @@ module.exports = require("zlib");
 /******/ 	}
 /******/ 	
 /************************************************************************/
-/******/ 	/* webpack/runtime/compat get default export */
-/******/ 	(() => {
-/******/ 		// getDefaultExport function for compatibility with non-harmony modules
-/******/ 		__nccwpck_require__.n = (module) => {
-/******/ 			var getter = module && module.__esModule ?
-/******/ 				() => (module['default']) :
-/******/ 				() => (module);
-/******/ 			__nccwpck_require__.d(getter, { a: getter });
-/******/ 			return getter;
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/define property getters */
-/******/ 	(() => {
-/******/ 		// define getter functions for harmony exports
-/******/ 		__nccwpck_require__.d = (exports, definition) => {
-/******/ 			for(var key in definition) {
-/******/ 				if(__nccwpck_require__.o(definition, key) && !__nccwpck_require__.o(exports, key)) {
-/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
-/******/ 				}
-/******/ 			}
-/******/ 		};
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
-/******/ 	(() => {
-/******/ 		__nccwpck_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
-/******/ 	})();
-/******/ 	
-/******/ 	/* webpack/runtime/make namespace object */
-/******/ 	(() => {
-/******/ 		// define __esModule on exports
-/******/ 		__nccwpck_require__.r = (exports) => {
-/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
-/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
-/******/ 			}
-/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
-/******/ 		};
-/******/ 	})();
-/******/ 	
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
 var __webpack_exports__ = {};
-// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-"use strict";
-__nccwpck_require__.r(__webpack_exports__);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(9316);
-/* harmony import */ var _actions_core__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_core__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(518);
-/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(7147);
-/* harmony import */ var fs__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(fs__WEBPACK_IMPORTED_MODULE_2__);
-
-
-
-
-
+const core = __nccwpck_require__(9316)
+const axios = __nccwpck_require__(518)
+const fs = __nccwpck_require__(7147)
 
 
 
@@ -4876,10 +4826,10 @@ const fail = (message) => {
 const run = async () => {
 	console.log('Validating params...')
 	// Get & validate all inputs from the action
-	const universeId = validateInt(_actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('universe-id'));
-	const placeId = validateInt(_actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('place-id'));
-	const apiKey = validateStr(_actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('api-key'));
-	const path = validateStr(_actions_core__WEBPACK_IMPORTED_MODULE_0___default().getInput('path'));
+	const universeId = validateInt(core.getInput('universe-id'));
+	const placeId = validateInt(core.getInput('place-id'));
+	const apiKey = validateStr(core.getInput('api-key'));
+	const path = validateStr(core.getInput('path'));
 	// Check if all inputs are good
 	if (!universeId) { return fail('Universe id was not valid') }
 	if (!placeId) { return fail('Place id was not valid') }
@@ -4895,13 +4845,13 @@ const run = async () => {
 	console.log('Reading place file...')
 	let file
 	try {
-		file = await fs__WEBPACK_IMPORTED_MODULE_2__.promises.readFile(path)
+		file = await fs.promises.readFile(path)
 	} catch {
 		return fail(`Unable to read file at "${path}"`)
 	}
 	// Try to publish to the open cloud api
 	console.log('Publishing to Roblox...')
-	return await (axios__WEBPACK_IMPORTED_MODULE_1___default()({
+	return await (axios.default({
 		method: 'POST',
 		url: `https://apis.roblox.com/universes/v1/${universeId}/places/${placeId}/versions?versionType=Published`,
 		data: file,
@@ -4955,20 +4905,20 @@ const run = async () => {
 
 run().then(res => {
 	if (res.success) {
-		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('success', 'true')
-		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('message', 'Published!')
-		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('version-number', res.versionNumber.toString())
+		core.setOutput('success', 'true')
+		core.setOutput('message', 'Published!')
+		core.setOutput('version-number', res.versionNumber.toString())
 	} else {
-		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('success', 'false')
-		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('message', res.message)
-		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('version-number', '-1')
-		_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setFailed(res.message)
+		core.setOutput('success', 'false')
+		core.setOutput('message', res.message)
+		core.setOutput('version-number', '-1')
+		core.setFailed(res.message)
 	}
 }).catch(err => {
-	_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('success', 'false')
-	_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('message', err)
-	_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setOutput('version-number', '-1')
-	_actions_core__WEBPACK_IMPORTED_MODULE_0___default().setFailed(err)
+	core.setOutput('success', 'false')
+	core.setOutput('message', err)
+	core.setOutput('version-number', '-1')
+	core.setFailed(err)
 })
 })();
 
