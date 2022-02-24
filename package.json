@@ -1,0 +1,17 @@
+{
+  "name": "roblox-place-publish-action",
+  "version": "1.0.0",
+  "description": "Publish a place file to Roblox using the Open Cloud API",
+  "main": "dist/index.js",
+  "keywords": [],
+  "author": "Filip Tibell",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/io": "^1.1.1",
+    "axios": "^0.26.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.21"
+  }
+}

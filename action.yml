@@ -1,0 +1,33 @@
+name: 'Publish Roblox Place'
+
+description: 'Publish a place file to Roblox using the Open Cloud API'
+
+inputs:
+  universe-id:
+    description: 'The universe id of the place to publish'
+    required: true
+    default: '-1'
+  place-id:
+    description: 'The place id of the place to publish'
+    required: true
+    default: '-1'
+  api-key:
+    description: 'The Open Cloud API key with permissions to publish the place'
+    required: true
+    default: ''
+  path:
+    description: 'The path to the place file to publish'
+    required: true
+    default: 'place.rbxl'
+
+outputs:
+  success:
+    description: 'If publishing was successful or not'
+  message:
+    description: 'A short message describing the status of the publish'
+  version-number:
+    description: 'The version number of the newly published place. Will be -1 if not successful'
+
+runs:
+  using: 'node16'
+  main: 'index.js'
