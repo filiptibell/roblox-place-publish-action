@@ -4,10 +4,11 @@ This action publishes a place file to Roblox using the Open Cloud API.
 
 ## Inputs
 
-* `universe-id` **Required** The universe id of the place to publish.
-* `place-id` **Required** The place id of the place to publish.
-* `api-key` **Required** An Open Cloud API key with permissions to publish the place.
-* `path` **Required** A path to the place file to publish.
+* `universe-id` - **Required** - The universe id of the place to publish.
+* `place-id` - **Required** - The place id of the place to publish.
+* `api-key` - **Required** - An Open Cloud API key with permissions to publish the place.
+* `path` - **Required** - A path to the place file to publish.
+* `max-retries` - **Optional** - Number of times to retry if a Roblox server error occurs.
 
 ## Outputs
 
@@ -18,10 +19,11 @@ This action publishes a place file to Roblox using the Open Cloud API.
 ## Example usage
 
 ```yaml
-uses: filiptibell/roblox-place-publish-action@v2.0
+uses: filiptibell/roblox-place-publish-action@v2.1
 with:
   universe-id: '123456'
   place-id: '1234567890'
   api-key: ${{ secrets.CLOUD_API_KEY }}
   path: 'place.rbxl'
+  max-retries: '3'
 ```

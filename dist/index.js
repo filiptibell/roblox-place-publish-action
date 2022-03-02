@@ -4783,9 +4783,9 @@ module.exports = require("zlib");
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-const core = __nccwpck_require__(9316)
-const axios = __nccwpck_require__(518)
-const fs = __nccwpck_require__(7147)
+const core = __nccwpck_require__(9316);
+const axios = __nccwpck_require__(518);
+const fs = __nccwpck_require__(7147);
 
 
 
@@ -4812,10 +4812,12 @@ const validateStr = (value) => {
 
 
 
-const fail = (message) => {
+const fail = (statusCode, message) => {
 	return {
 		success: false,
 		message,
+		statusCode,
+		versionNumber: -1,
 	}
 }
 
@@ -4823,43 +4825,17 @@ const fail = (message) => {
 
 
 
-const run = async () => {
-	console.log('Validating params...')
-	// Get & validate all inputs from the action
-	const universeId = validateInt(core.getInput('universe-id'));
-	const placeId = validateInt(core.getInput('place-id'));
-	const apiKey = validateStr(core.getInput('api-key'));
-	const path = validateStr(core.getInput('path'));
-	// Check if all inputs are good
-	if (!universeId) { return fail('Universe id was not valid') }
-	if (!placeId) { return fail('Place id was not valid') }
-	if (!apiKey) { return fail('Missing API key') }
-	if (!path) { return fail('Missing file path') }
-	// Check to make sure we got either a .rbxl or .rbxlx file path
-	const isRbxl = path.endsWith('.rbxl')
-	const isRbxlx = path.endsWith('.rbxlx')
-	if (!(isRbxl || isRbxlx)) {
-		return fail('Invalid file format')
-	}
-	// Try to read the given file path
-	console.log('Reading place file...')
-	let file
-	try {
-		file = await fs.promises.readFile(path)
-	} catch {
-		return fail(`Unable to read file at "${path}"`)
-	}
-	// Try to publish to the open cloud api
+const tryPublish = async (config) => {
 	console.log('Publishing to Roblox...')
 	return await (axios.default({
 		method: 'POST',
-		url: `https://apis.roblox.com/universes/v1/${universeId}/places/${placeId}/versions?versionType=Published`,
-		data: file,
+		url: `https://apis.roblox.com/universes/v1/${config.universeId}/places/${config.placeId}/versions?versionType=Published`,
+		data: config.file,
 		headers: {
-			'Content-Type': (isRbxl ? 'application/octet-stream' : 'application/xml'),
-			'x-api-key': apiKey,
+			'Content-Type': (config.isRbxl ? 'application/octet-stream' : 'application/xml'),
+			'x-api-key': config.apiKey,
 		}
-	}).then(res => {
+	}).then((res) => {
 		console.log('Parsing response...')
 		// Make sure we got a proper response json
 		const data = (typeof res.data === 'string') ? JSON.parse(res.data) : res.data
@@ -4874,6 +4850,7 @@ const run = async () => {
 				return {
 					success: true,
 					message: 'Published!',
+					statusCode: res.status,
 					versionNumber: version,
 				}
 			}
@@ -4881,25 +4858,93 @@ const run = async () => {
 			const code = validateInt(data.code)
 			const message = validateStr(data.message)
 			if (code && message) {
-				return fail(`Failed with error code #${code}: ${message}`)
+				return fail(res.status, `Failed with error code #${code}: ${message}`)
 			}
 		}
 		// We got some weird undocumented response
-		return fail('Unknown response: ' + data)
-	}).catch(error => {
+		return fail(res.status, `Unknown response: ${data}`)
+	}).catch((error) => {
 		if (error.response) {
+			const statusCode = error.response.status
 			// The request was made and the server responded with
 			// a status code that falls out of the range of 2xx
-			return fail(error.response.statusText)
+			return fail(statusCode, `${statusCode} ${error.response.statusText}`)
 		} else if (error.request) {
 			// The request was made but no response was received
-			return fail('No response from server')
+			return fail(0, 'No response from server')
 		} else {
 			// Something bad happened in setting up
 			// the request that triggered an Error
-			return fail('Error: ' + error.message);
+			return fail(0, `Error: ${error.message}`);
 		}
 	}))
+}
+
+
+
+
+
+const run = async () => {
+	// Print initial space (looks nicer on GitHub) & message
+	console.log('')
+	console.log('Validating params...')
+	// Get & validate all inputs from the action
+	const universeId = validateInt(core.getInput('universe-id'));
+	const placeId = validateInt(core.getInput('place-id'));
+	const apiKey = validateStr(core.getInput('api-key'));
+	const path = validateStr(core.getInput('path'));
+	const maxRetries = validateInt(core.getInput('max-retries'));
+	// Check if all inputs are good
+	if (!universeId) { return fail(-1, 'Universe id was not valid') }
+	if (!placeId) { return fail(-1, 'Place id was not valid') }
+	if (!apiKey) { return fail(-1, 'Missing API key') }
+	if (!path) { return fail(-1, 'Missing file path') }
+	if (!maxRetries) { return fail(-1, 'Max retries was not valid') }
+	// Check to make sure we got either a .rbxl or .rbxlx file path
+	const isRbxl = path.endsWith('.rbxl')
+	const isRbxlx = path.endsWith('.rbxlx')
+	if (!(isRbxl || isRbxlx)) {
+		return fail(-1, 'Invalid file format')
+	}
+	// Try to read the given file path
+	console.log('Reading place file...')
+	let file
+	try {
+		file = await fs.promises.readFile(path)
+	} catch {
+		return fail(-1, `Unable to read file at "${path}"`)
+	}
+	// Create config for publishing and retrying when necessary
+	const config = {
+		universeId,
+		placeId,
+		apiKey,
+		path,
+		maxRetries,
+		isRbxl,
+		isRbxlx,
+		file
+	}
+	// Try to publish using the open cloud api
+	let retries = 0
+	let result = await tryPublish(config)
+	while ((!result.success) && (retries <= maxRetries)) {
+		console.log(`Publishing to Roblox failed with status code ${result.statusCode}!`)
+		// Retry only on server error
+		if (result.statusCode >= 500) {
+			retries += 1
+			console.log(`Retrying... (${retries} of ${maxRetries})`)
+			result = await tryPublish(config)
+		} else {
+			// Probably an error on our end, so emit some extra, maybe
+			// helpful messages whenever we know what might have gone wrong
+			if ((result.statusCode == 401) || (result.statusCode == 403)) {
+				console.log('Make sure the given API key is valid.')
+			}
+			break
+		}
+	}
+	return result
 }
 
 

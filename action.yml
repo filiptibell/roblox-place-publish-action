@@ -19,6 +19,10 @@ inputs:
     description: 'The path to the place file to publish'
     required: true
     default: 'place.rbxl'
+  max-retries:
+    description: 'The maximum number of times to try to publish before failing'
+    required: false
+    default: '3'
 
 outputs:
   success:
